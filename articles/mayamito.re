@@ -47,7 +47,6 @@ kotlin {
     hostOs == "Mac OS X" && arch == "x86_64" -> macosX64("native")
     hostOs == "Mac OS X" && arch == "aarch64" -> macosArm64("native")
     hostOs == "Linux" -> linuxX64("native")
-    // Other supported targets are listed here: https://ktor.io/docs/native-server.html#targets
     else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
   }
 
@@ -186,7 +185,7 @@ createAtとupdateAtにInstantを指定しています。これはkotlinx-datetim
 
 Todoの作成と更新で受け取るJSONの型も同じく定義します。
 
-//listnum[sample6][Request.kt][kotlin] {
+//listnum[sample6][Request.kt][kotlin]{
 @Serializable
 data class CreateTodoRequest(
     val title: String,
@@ -430,11 +429,11 @@ export KTOR_LOG_LEVEL=TRACE
 
 KTOR_LOG_LEVELという環境変数を使うことで、リクエストを受け取った際に出力するログのレベルを制御することができます。指定可能な値は次の通りです。
 
-* TRACE
-* DEBUG
-* INFO
-* WARN
-* ERROR
+ * TRACE
+ * DEBUG
+ * INFO
+ * WARN
+ * ERROR
 
 早速実行してサーバーを起動してみましょう。DBのdockerを立ち上げていない場合はdocker-composeで立ち上げるのを忘れないようにしてください。
 
@@ -454,12 +453,26 @@ curl -X POST \
 -d '{"title": "hoge", "content": "fuga"}' \
 'localhost:8080/todos'
 
-{"id":"ffff93ff-ffff-4400-bfec-17ffffffb900","title":"hoge","content":"fuga","create_at":"2023-07-25T15:16:38.571Z","update_at":"2023-07-25T15:16:38.571Z"}
+{
+  "id":"ffff93ff-ffff-4400-bfec-17ffffffb900",
+  "title":"hoge",
+  "content":"fuga",
+  "create_at":"2023-07-25T15:16:38.571Z",
+  "update_at":"2023-07-25T15:16:38.571Z"
+}
 
 
 curl 'localhost:8080/todos'
 
-[{"id":"ffff93ff-ffff-4400-bfec-17ffffffb900","title":"hoge","content":"fuga","create_at":"2023-07-25T15:16:38.571Z","update_at":"2023-07-25T15:16:38.571Z"}]
+[
+  {
+    "id":"ffff93ff-ffff-4400-bfec-17ffffffb900",
+    "title":"hoge",
+    "content":"fuga",
+    "create_at":"2023-07-25T15:16:38.571Z",
+    "update_at":"2023-07-25T15:16:38.571Z"
+  }
+]
 //}
 
 このように、ちゃんとレスポンスが返ってくると思います。サーバー側のログも見てみましょう。
@@ -469,11 +482,16 @@ Matched routes:
   "" -> "todos" -> "(method:POST)"
 Route resolve result:
   SUCCESS @ /todos/(method:POST)
-[TRACE] (io.ktor.server.engine.DefaultTransform): No Default Transformations found for class io.ktor.utils.io.ByteChannelNative and expected type TypeInfo(type=class com.yt8492.ktornative.model.CreateTodoRequest, reifiedType=com.yt8492.ktornative.model.CreateTodoRequest, kotlinType=com.yt8492.ktornative.model.CreateTodoRequest) for call /todos
+[TRACE] (io.ktor.server.engine.DefaultTransform): No Default Transformations
+  found for class io.ktor.utils.io.ByteChannelNative and expected type
+TypeInfo(type=class com.yt8492.ktornative.model.CreateTodoRequest,
+reifiedType=com.yt8492.ktornative.model.CreateTodoRequest,
+kotlinType=com.yt8492.ktornative.model.CreateTodoRequest) for call /todos
 [TRACE] (io.ktor.routing.Routing): Trace for [todos]
 /, segment:0 -> SUCCESS @ /
   /todos, segment:1 -> SUCCESS @ /todos
-    /todos/(method:POST), segment:1 -> FAILURE "Selector didn't match" @ /todos/(method:POST)
+    /todos/(method:POST), segment:1 -> FAILURE "Selector didn't match"
+@ /todos/(method:POST)
     /todos/(method:GET), segment:1 -> SUCCESS @ /todos/(method:GET)
     /todos/{id}, segment:1 -> FAILURE "Selector didn't match" @ /todos/{id}
 Matched routes:
@@ -485,6 +503,14 @@ Route resolve result:
 このように、リクエストのトレースが出力されているのがわかると思います。
 
 これで、KtorとKotlin/Nativeを用いたTodoアプリの実装は完了です。
+
+== 今回のサンプル実装のリンク
+
+今回のサンプル実装は、マヤミトのGitHubで公開しています。今後アップデートするかもしれないので、興味があれば見てみてください。
+
+//image[mayamito-1][repository]
+
+https://github.com/yt8492/ktor-native-server-sample
 
 == おわりに
 
